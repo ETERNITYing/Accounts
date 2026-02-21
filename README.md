@@ -1,2 +1,2 @@
 # Accounts
-A new Flutter project.
+A simple accounting program
