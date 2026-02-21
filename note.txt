@@ -1,0 +1,18 @@
+lib/
+├── core/                   # 共用工具 (例如 usecase 介面, 錯誤處理)
+├── features/
+│   └── posts/              # 功能模組
+│       ├── data/           # 資料層 (實作)
+│       │   ├── datasources/# Firebase 呼叫
+│       │   ├── models/     # JSON/Firestore 轉換模型
+│       │   └── repositories/# Repository 實作
+│       ├── domain/         # 業務邏輯層 (純 Dart，無 Flutter 依賴)
+│       │   ├── entities/   # 核心商業物件
+│       │   ├── repositories/# Repository 介面 (契約)
+│       │   └── usecases/   # 單一職責的業務邏輯
+│       └── presentation/   # 表現層 (UI)
+│           ├── bloc/       # BLoC 狀態管理
+│           ├── pages/      # 頁面 (多級介面)
+│           └── widgets/    # 獨立元件
+├── injection_container.dart # 依賴注入 (Service Locator)
+└── main.dart
