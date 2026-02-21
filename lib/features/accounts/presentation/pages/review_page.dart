@@ -106,6 +106,122 @@ class _ReviewPageState extends State<ReviewPage> {
     );
   }
 
+  // 顯示編輯/刪除帳戶的底部彈出視窗
+  void _showEditAccountBottomSheet(AccountEntity account) {
+    // 初始化直接填入舊資料
+    final nameController = TextEditingController(text: account.name);
+    final balanceController = TextEditingController(text: account.balance.toStringAsFixed(0));
+    AccountType selectedType = account.type;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return StatefulBuilder(
+            builder: (context, setModalState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                  left: 24, right: 24, top: 24,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('編輯帳戶', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        // 刪除按鈕
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: () {
+                            // 彈出再次確認視窗
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('刪除帳戶'),
+                                content: const Text('確定要刪除此帳戶嗎？注意：這不會刪除相關的記帳紀錄'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('取消')),
+                                  TextButton(
+                                    onPressed: () {
+                                      context.read<AccountBloc>().add(DeleteAccountEvent(account.id));
+                                      Navigator.pop(ctx); // 關閉對話框
+                                      Navigator.pop(context); // 關閉 BottomSheet
+                                    },
+                                    style: TextButton.styleFrom(foregroundColor: Colors.red),
+                                    child: const Text('刪除'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      decoration: const InputDecoration(labelText: '帳戶名稱', border: OutlineInputBorder()),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: balanceController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(labelText: '目前餘額', border: OutlineInputBorder(), prefixIcon: Icon(Icons.attach_money)),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('帳戶類型', style: TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: SegmentedButton<AccountType>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          ButtonSegment(value: AccountType.cash, label: Text('現金')),
+                          ButtonSegment(value: AccountType.bank, label: Text('銀行')),
+                          ButtonSegment(value: AccountType.creditCard, label: Text('信用卡')),
+                        ],
+                        selected: {selectedType},
+                        onSelectionChanged: (Set<AccountType> newSelection) {
+                          setModalState(() => selectedType = newSelection.first);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: FilledButton(
+                        onPressed: () {
+                          final name = nameController.text.trim();
+                          final balance = double.tryParse(balanceController.text) ?? 0.0;
+                          if (name.isEmpty) return;
+
+                          // 🌟 使用 copyWith 更新舊資料
+                          final updatedAccount = account.copyWith(
+                            name: name,
+                            balance: balance,
+                            type: selectedType,
+                          );
+
+                          context.read<AccountBloc>().add(UpdateAccountEvent(updatedAccount));
+                          Navigator.pop(context);
+                        },
+                        child: const Text('儲存修改', style: TextStyle(fontSize: 16)),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
+                ),
+              );
+            }
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,6 +310,8 @@ class _ReviewPageState extends State<ReviewPage> {
                           '\$${account.balance.toStringAsFixed(0)}',
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
+                        // 長按彈出編輯/刪除
+                        onLongPress: () => _showEditAccountBottomSheet(account),
                       );
                     },
                   ),

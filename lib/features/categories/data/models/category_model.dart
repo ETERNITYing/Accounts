@@ -10,17 +10,19 @@ class CategoryModel extends CategoryEntity {
     required super.colorValue,
     required super.type,
     required super.userId,
+    required super.sortOrder
   });
 
   // 1. 將 Entity 轉成 Model
-  factory CategoryModel.fromEntity(CategoryEntity entity) {
+  factory CategoryModel.fromEntity(CategoryEntity categoryEntity_) {
     return CategoryModel(
-      id: entity.id,
-      name: entity.name,
-      iconCode: entity.iconCode,
-      colorValue: entity.colorValue,
-      type: entity.type,
-      userId: entity.userId,
+      id: categoryEntity_.id,
+      name: categoryEntity_.name,
+      iconCode: categoryEntity_.iconCode,
+      colorValue: categoryEntity_.colorValue,
+      type: categoryEntity_.type,
+      userId: categoryEntity_.userId,
+      sortOrder: categoryEntity_.sortOrder,
     );
   }
 
@@ -37,6 +39,7 @@ class CategoryModel extends CategoryEntity {
         orElse: () => TransactionType.expense, // 預設為支出
       ),
       userId: data['userId'] ?? '',
+        sortOrder: data['sortOrder'] ?? 0,
     );
   }
 
@@ -48,6 +51,7 @@ class CategoryModel extends CategoryEntity {
       'colorValue': colorValue,
       'type': type.name, // Enum 轉字串
       'userId': userId,
+      'sortOrder': sortOrder,
     };
   }
 }

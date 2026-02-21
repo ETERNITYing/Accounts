@@ -242,6 +242,13 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       return;
     }
 
+    if (_selectedAccountId == null || _selectedCategoryId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('請確實選擇帳戶與分類')),
+      );
+      return;
+    }
+
     final now = DateTime.now();
     // 取得選定日期的 年/月/日，搭配現在的 時:分:秒
     final finalDateTime = DateTime(

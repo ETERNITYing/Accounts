@@ -1,5 +1,6 @@
 // 檔案：lib/features/settings/presentation/pages/setting_main_page.dart
 import 'package:flutter/material.dart';
+import '../../../categories/presentation/pages/category_manage_page.dart';
 import 'ai_setting_page.dart'; // 引入剛剛改名好的 AI 設定頁面
 
 class MainSettingPage extends StatelessWidget {
@@ -45,8 +46,10 @@ class MainSettingPage extends StatelessWidget {
             title: const Text('收支分類'),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
-              // TODO: 未來實作分類管理頁面
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('即將推出')));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CategoryManagePage()),
+              );
             },
           ),
 

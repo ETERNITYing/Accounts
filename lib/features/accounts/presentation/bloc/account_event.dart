@@ -16,3 +16,19 @@ class AddAccountEvent extends AccountEvent {
   @override
   List<Object> get props => [account];
 }
+
+class UpdateAccountEvent extends AccountEvent {
+  final AccountEntity account;
+  const UpdateAccountEvent(this.account);
+
+  @override
+  List<Object> get props => [account];
+}
+
+class DeleteAccountEvent extends AccountEvent {
+  final String accountId;
+  const DeleteAccountEvent(this.accountId);
+
+  @override
+  List<Object> get props => [accountId];
+}

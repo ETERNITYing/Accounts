@@ -6,4 +6,5 @@ abstract class CategoryRepository {
   Future<void> createCategory(CategoryEntity category);
   Future<void> updateCategory(CategoryEntity category);
   Future<void> deleteCategory(String id);
+  Future<void> updateCategoryOrders(List<CategoryEntity> categories);
 }

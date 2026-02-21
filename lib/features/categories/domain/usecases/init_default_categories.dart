@@ -22,19 +22,19 @@ class InitDefaultCategories {
     // 預設分類
     final defaultCategories = [
       // --- 支出 ---
-      const CategoryEntity(id: '', name: '飲食', iconCode: 'restaurant', colorValue: 0xFFFF9800, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '交通', iconCode: 'directions_car', colorValue: 0xFF2196F3, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '購物', iconCode: 'shopping_cart', colorValue: 0xFFE91E63, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '娛樂', iconCode: 'movie', colorValue: 0xFF9C27B0, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '居家', iconCode: 'home', colorValue: 0xFF4CAF50, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '醫療', iconCode: 'local_hospital', colorValue: 0xFFF44336, type: TransactionType.expense, userId: ''),
-      const CategoryEntity(id: '', name: '其他', iconCode: 'more_horiz', colorValue: 0xFF9E9E9E, type: TransactionType.expense, userId: ''),
+      const CategoryEntity(id: '', name: '飲食', iconCode: 'restaurant', colorValue: 0xFFFF9800, type: TransactionType.expense, userId: '', sortOrder: 0,),
+      const CategoryEntity(id: '', name: '交通', iconCode: 'directions_car', colorValue: 0xFF2196F3, type: TransactionType.expense, userId: '', sortOrder: 1,),
+      const CategoryEntity(id: '', name: '購物', iconCode: 'shopping_cart', colorValue: 0xFFE91E63, type: TransactionType.expense, userId: '', sortOrder: 2,),
+      const CategoryEntity(id: '', name: '娛樂', iconCode: 'movie', colorValue: 0xFF9C27B0, type: TransactionType.expense, userId: '', sortOrder: 3,),
+      const CategoryEntity(id: '', name: '居家', iconCode: 'home', colorValue: 0xFF4CAF50, type: TransactionType.expense, userId: '', sortOrder: 4,),
+      const CategoryEntity(id: '', name: '醫療', iconCode: 'local_hospital', colorValue: 0xFFF44336, type: TransactionType.expense, userId: '', sortOrder: 5,),
+      const CategoryEntity(id: '', name: '其他', iconCode: 'more_horiz', colorValue: 0xFF9E9E9E, type: TransactionType.expense, userId: '', sortOrder: 6,),
 
       // --- 收入 ---
-      const CategoryEntity(id: '', name: '薪水', iconCode: 'attach_money', colorValue: 0xFF8BC34A, type: TransactionType.income, userId: ''),
-      const CategoryEntity(id: '', name: '投資', iconCode: 'trending_up', colorValue: 0xFFFFC107, type: TransactionType.income, userId: ''),
-      const CategoryEntity(id: '', name: '獎金', iconCode: 'card_giftcard', colorValue: 0xFF00BCD4, type: TransactionType.income, userId: ''),
-      const CategoryEntity(id: '', name: '其他收入', iconCode: 'add_circle_outline', colorValue: 0xFF9E9E9E, type: TransactionType.income, userId: ''),
+      const CategoryEntity(id: '', name: '薪水', iconCode: 'attach_money', colorValue: 0xFF8BC34A, type: TransactionType.income, userId: '', sortOrder: 0,),
+      const CategoryEntity(id: '', name: '投資', iconCode: 'trending_up', colorValue: 0xFFFFC107, type: TransactionType.income, userId: '', sortOrder: 1,),
+      const CategoryEntity(id: '', name: '獎金', iconCode: 'card_giftcard', colorValue: 0xFF00BCD4, type: TransactionType.income, userId: '', sortOrder: 2,),
+      const CategoryEntity(id: '', name: '其他收入', iconCode: 'add_circle_outline', colorValue: 0xFF9E9E9E, type: TransactionType.income, userId: '', sortOrder: 3,),
     ];
 
     // 用迴圈一筆一筆存進 Firebase

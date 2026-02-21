@@ -8,6 +8,7 @@ abstract class CategoryRemoteDataSource {
   Future<void> createCategory(CategoryModel category);
   Future<void> updateCategory(CategoryModel category);
   Future<void> deleteCategory(String id);
+  Future<void> updateCategoryOrders(List<CategoryModel> categories);
 }
 
 class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
@@ -34,6 +35,7 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
         .collection('categories')
         .where('userId', isEqualTo: _uid)
         .where('type', isEqualTo: type.name) // 過濾是收入還是支出的分類
+        .orderBy('sortOrder')
         .get();
 
     return snapshot.docs.map((doc) => CategoryModel.fromSnapshot(doc)).toList();
@@ -62,5 +64,18 @@ class CategoryRemoteDataSourceImpl implements CategoryRemoteDataSource {
   @override
   Future<void> deleteCategory(String id) async {
     await firestore.collection('categories').doc(id).delete();
+  }
+
+  @override
+  Future<void> updateCategoryOrders(List<CategoryModel> categories) async {
+    WriteBatch batch = firestore.batch();
+
+    for (var category in categories) {
+      final docRef = firestore.collection('categories').doc(category.id);
+      // 只更新 sortOrder 這個欄位
+      batch.update(docRef, {'sortOrder': category.sortOrder});
+    }
+
+    await batch.commit();
   }
 }

@@ -46,4 +46,14 @@ class CategoryRepositoryImpl implements CategoryRepository {
       throw Exception('ERROR! Delete Categories Fail:: $e');
     }
   }
+
+  @override
+  Future<void> updateCategoryOrders(List<CategoryEntity> categories) async {
+    try {
+      final models = categories.map((entity) => CategoryModel.fromEntity(entity)).toList();
+      await remoteDataSource.updateCategoryOrders(models);
+    } catch (e) {
+      throw Exception('ERROR! Update Category Orders Fail: $e');
+    }
+  }
 }

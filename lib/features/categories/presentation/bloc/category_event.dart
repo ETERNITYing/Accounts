@@ -17,3 +17,34 @@ class LoadCategoriesEvent extends CategoryEvent {
 
 // 初始化預設分類
 class InitializeDefaultCategoriesEvent extends CategoryEvent {}
+
+class AddCategoryEvent extends CategoryEvent {
+  final CategoryEntity category;
+  const AddCategoryEvent(this.category);
+  @override
+  List<Object> get props => [category];
+}
+
+class UpdateCategoryEvent extends CategoryEvent {
+  final CategoryEntity category;
+  const UpdateCategoryEvent(this.category);
+  @override
+  List<Object> get props => [category];
+}
+
+class DeleteCategoryEvent extends CategoryEvent {
+  final String categoryId;
+  final TransactionType type; // 需要知道刪除的是收入還是支出，才能重整對應的列表
+  const DeleteCategoryEvent(this.categoryId, this.type);
+  @override
+  List<Object> get props => [categoryId, type];
+}
+
+class ReorderCategoriesEvent extends CategoryEvent {
+  final List<CategoryEntity> updatedCategories;
+  final TransactionType type; // 為了重整畫面用
+  const ReorderCategoriesEvent(this.updatedCategories, this.type);
+
+  @override
+  List<Object> get props => [updatedCategories, type];
+}
