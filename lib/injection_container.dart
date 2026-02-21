@@ -38,6 +38,16 @@ import 'features/categories/domain/usecases/read/get_categories.dart';
 import 'features/categories/domain/repositories/category_repository.dart';
 import 'features/categories/data/repositories/category_repository_impl.dart';
 import 'features/categories/data/datasources/category_remote_data_source.dart';
+// auth Bloc and use case
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/domain/usecases/get_current_user.dart';
+import 'features/auth/domain/usecases/sign_in.dart';
+import 'features/auth/domain/usecases/sign_up.dart';
+import 'features/auth/domain/usecases/sign_out.dart';
+// auth repo and data
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/data/datasources/auth_remote_data_source.dart';
 
 final sl = GetIt.instance; // sl = Service Locator
 
@@ -146,6 +156,24 @@ Future<void> init() async {
       firebaseAuth: sl(),
     ),
   );
+
+  // Features - Auth
+  // Bloc
+  sl.registerFactory(() => AuthBloc(
+    getCurrentUser: sl(), signIn: sl(), signUp: sl(), signOut: sl(),
+  ));
+  // Use cases
+  sl.registerLazySingleton(() => GetCurrentUser(sl()));
+
+  sl.registerLazySingleton(() => SignIn(sl()));
+
+  sl.registerLazySingleton(() => SignUp(sl()));
+
+  sl.registerLazySingleton(() => SignOut(sl()));
+  // Repository
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(remoteDataSource: sl()));
+  // Data Source
+  sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSourceImpl(firebaseAuth: sl()));
 
   // External (外部依賴)
   // Firestore 實體
