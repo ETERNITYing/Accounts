@@ -55,6 +55,9 @@ dependencies:
 
   google_generative_ai: ^0.4.6   # Gemini 官方套件
   flutter_secure_storage: ^10.0.0 # 加密本地儲存，專門放密碼跟 API Key
+  flutter_displaymode: ^0.7.0
+  toastification: ^3.0.3
+  fl_chart: ^1.1.1
 
 dev_dependencies:
   flutter_test:

@@ -32,18 +32,21 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
   @override
   Future<void> updateBalance(String accountId, double amount) async {
     try {
-      final docRef = firestore.collection('accounts').doc(accountId);
-      final snapshot = await docRef.get();
+      // 直接執行更新
+      await firestore.collection('accounts').doc(accountId).update({
+        'balance': FieldValue.increment(amount),
+      });
 
-      // 如果帳戶還在，才進行餘額更新
-      if (snapshot.exists) {
-        await docRef.update({
-          'balance': FieldValue.increment(amount),
-        });
-      } else {
-        // 帳戶已被刪除，跳過
-        print('帳戶 $accountId 已被刪除，跳過餘額更新');
+    } on FirebaseException catch (e) {
+      // 攔截「找不到文件 (not-found)」
+      // 以及「因為文件不存在導致安全規則崩潰 (permission-denied)」的錯誤
+      if (e.code == 'not-found' || e.code == 'permission-denied') {
+        print('帳戶 $accountId 不存在或已被刪除，跳過餘額更新');
+        return; // 默默結束，不拋出錯誤，讓外層的更新邏輯可以順利跑完
       }
+
+      // 其他嚴重錯誤才真的丟出去
+      throw Exception('Update balance failed: ${e.message}');
     } catch (e) {
       throw Exception('Update balance failed: $e');
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:toastification/toastification.dart';
 import '../../../settings/presentation/pages/ai_setting_page.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../bloc/transaction_bloc.dart';
@@ -123,6 +124,20 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('AI 正在思考中...')),
     );
+
+    toastification.show(
+      context: context,
+      type: ToastificationType.success, // 成功狀態
+      style: ToastificationStyle.flatColored, // 扁平彩色風格
+      title: const Text('頂部通知測試', style: TextStyle(fontWeight: FontWeight.bold)),
+      autoCloseDuration: const Duration(seconds: 3),
+      alignment: Alignment.topCenter, // 從頂部彈出
+      animationDuration: const Duration(milliseconds: 300),
+      showProgressBar: false, // 關閉底部的進度條
+      borderRadius: BorderRadius.circular(100),
+      margin: const EdgeInsets.only(top: 16, left: 24, right: 24),
+    );
+
 
     try {
       // 初始化 Gemini 模型

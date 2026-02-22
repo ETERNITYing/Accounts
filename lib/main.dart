@@ -1,5 +1,8 @@
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'dart:io';
+import 'package:toastification/toastification.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,6 +31,15 @@ void main() async {
   //   print('匿名登入失敗: $e');
   // }
 
+  if (Platform.isAndroid) {
+    try {
+      await FlutterDisplayMode.setHighRefreshRate();
+      print('切換至120Hz');
+    } catch (e) {
+      print('切換高更新率失敗: $e');
+    }
+  }
+
   runApp(const MyApp());
 }
 
@@ -53,22 +65,24 @@ class MyApp extends StatelessWidget {
               create: (_) => di.sl<AuthBloc>()..add(AppStartedEvent()),
             ),
           ],
+          child: ToastificationWrapper(
             child: MaterialApp(
-            title: 'Clean Architecture Demo',
-            theme: buildTheme(lightDynamic, false),
-            darkTheme: buildTheme(darkDynamic, true),
-            themeMode: ThemeMode.system,
-            home: BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                // 如果已經登入，就進入主程式
-                if (state is Authenticated) {
-                  return const MainWindow();
-                }
-                // 其他狀態 (包含未登入、初始狀態)，一律顯示登入頁
-                return const LoginPage();
-              },
-            ),// 進入第一級介面
-          )
+              title: 'Clean Architecture Demo',
+              theme: buildTheme(lightDynamic, false),
+              darkTheme: buildTheme(darkDynamic, true),
+              themeMode: ThemeMode.system,
+              home: BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  // 如果已經登入，就進入主程式
+                  if (state is Authenticated) {
+                    return const MainWindow();
+                  }
+                  // 其他狀態 (包含未登入、初始狀態)，一律顯示登入頁
+                  return const LoginPage();
+                },
+              ),// 進入第一級介面
+            )
+          ),
         );
       }
     );

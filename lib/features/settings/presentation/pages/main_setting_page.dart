@@ -59,7 +59,7 @@ class MainSettingPage extends StatelessWidget {
           const _SectionHeader(title: '其他'),
           ListTile(
             leading: const Icon(Icons.info_outline),
-            title: const Text('關於 Keep Accounting'),
+            title: const Text('關於 Keep Accounts'),
             onTap: () {
               // TODO: 顯示版本號等資訊
             },
@@ -70,7 +70,7 @@ class MainSettingPage extends StatelessWidget {
   }
 }
 
-// 這是一個自訂的私有小元件，用來畫出灰色的分類標題，讓選單更有層次感
+// 自訂的私有小元件，用來畫出灰色的分類標題
 class _SectionHeader extends StatelessWidget {
   final String title;
   const _SectionHeader({required this.title});
