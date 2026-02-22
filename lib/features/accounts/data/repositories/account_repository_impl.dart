@@ -58,7 +58,6 @@ class AccountRepositoryImpl implements AccountRepository {
   @override
   Future<void> updateBalance(String accountId, double amount) async {
     try {
-      // 替換掉原本的假裝延遲，真正呼叫 DataSource 去更新
       await remoteDataSource.updateBalance(accountId, amount);
       print('[AccountRepository] 成功更新帳戶 $accountId 的餘額！金額: $amount');
     } catch (e) {

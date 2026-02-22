@@ -31,9 +31,22 @@ class AccountRemoteDataSourceImpl implements AccountRemoteDataSource {
 
   @override
   Future<void> updateBalance(String accountId, double amount) async {
-    await firestore.collection('accounts').doc(accountId).update({
-      'balance': FieldValue.increment(amount),
-    });
+    try {
+      final docRef = firestore.collection('accounts').doc(accountId);
+      final snapshot = await docRef.get();
+
+      // 如果帳戶還在，才進行餘額更新
+      if (snapshot.exists) {
+        await docRef.update({
+          'balance': FieldValue.increment(amount),
+        });
+      } else {
+        // 帳戶已被刪除，跳過
+        print('帳戶 $accountId 已被刪除，跳過餘額更新');
+      }
+    } catch (e) {
+      throw Exception('Update balance failed: $e');
+    }
   }
 
   @override
