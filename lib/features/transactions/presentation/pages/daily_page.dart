@@ -37,16 +37,20 @@ class _DailyPageState extends State<DailyPage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'daily_add_fab',
         onPressed: () async {
-          await Navigator.push(
+          final returnedDate = await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => AddTransactionPage(selectedDate: _selectedDay ?? DateTime.now()),
               ),
           );
           print("開始語音記帳...");
 
-          if (context.mounted) {
+          if (returnedDate != null && context.mounted) {
+            setState(() {
+              _selectedDay = returnedDate;
+            });
             // 重新載入當日交易紀錄
             context.read<TransactionBloc>().add(LoadTransactionsEvent(_selectedDay ?? DateTime.now()));
+            _selectedDay = _selectedDay;
 
             // 重新載入帳戶餘額
             context.read<AccountBloc>().add(LoadAccountsEvent());
@@ -56,7 +60,7 @@ class _DailyPageState extends State<DailyPage> {
       ),
       body: Column(
         children: [
-          // --- 1. 日曆區塊 ---
+          // --- 日曆區塊 ---
           TableCalendar(
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
@@ -88,7 +92,7 @@ class _DailyPageState extends State<DailyPage> {
           ),
           const Divider(thickness: 1),
 
-          // --- 2. 總收支統計區塊 ---
+          // --- 總收支統計區塊 ---
           BlocBuilder<TransactionBloc, TransactionState>(
             builder: (context, state) {
               if (state is TransactionLoaded) {
@@ -107,11 +111,11 @@ class _DailyPageState extends State<DailyPage> {
             },
           ),
 
-          // --- 3. 交易紀錄列表區塊 ---
+          // --- 交易紀錄列表區塊 ---
           Expanded(
             child: BlocConsumer<TransactionBloc, TransactionState>(
               listener: (context, state) {
-                // 只要 TransactionBloc 成功載入完資料代表背後的 Firebase 新增/刪除/修改都跑完了)
+                // TransactionBloc 成功載入完資料代表背後的 Firebase 新增/刪除/修改都跑完了)
                 if (state is TransactionLoaded) {
                   // 通知 AccountBloc 去抓取最新餘額
                   context.read<AccountBloc>().add(LoadAccountsEvent());
@@ -142,6 +146,7 @@ class _DailyPageState extends State<DailyPage> {
                         ),
                         title: Text(transaction.note.isEmpty ? '未分類' : transaction.note),
                         subtitle: Text(DateFormat('HH:mm').format(transaction.date)), // 顯示時間
+                        // subtitle: Text(transaction.categoryId),
                         trailing: Text(
                           '${isExpense ? '-' : '+'}\$${transaction.amount}',
                           style: TextStyle(

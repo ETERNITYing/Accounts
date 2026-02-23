@@ -32,13 +32,25 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   String? _selectedAccountId;
   String? _selectedCategoryId;
+  late DateTime _selectedDateTime;
 
   @override
   void initState() {
     super.initState();
     _initSpeech(); // 畫面載入時立刻初始化語音引擎
+
     context.read<AccountBloc>().add(LoadAccountsEvent()); // 抓取使用者帳戶列表
     context.read<CategoryBloc>().add(const LoadCategoriesEvent(TransactionType.expense)); // 抓取使用者分類清單
+
+    // 初始化時間
+    final now = DateTime.now();
+    _selectedDateTime = DateTime(
+      widget.selectedDate.year,
+      widget.selectedDate.month,
+      widget.selectedDate.day,
+      now.hour,
+      now.minute,
+    );
   }
 
   // 初始化語音引擎 (會自動向使用者請求麥克風權限)
@@ -65,9 +77,41 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     super.dispose();
   }
 
+  // 時間選擇器
+  Future<void> _pickDateTime() async {
+    // 選日期
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDateTime,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (pickedDate == null) return; // 按了取消
+
+    if (!mounted) return;
+
+    // 選時間
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(_selectedDateTime),
+    );
+    if (pickedTime == null) return; // 按了取消
+
+    // 把日期跟時間合併存起來
+    setState(() {
+      _selectedDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+    });
+  }
+
   // 語音辨識與解析的邏輯
   void _toggleListening() async {
-// 如果沒有初始化成功 (例如使用者拒絕麥克風權限)，就提早退出
+  // 如果沒有初始化成功 (例如使用者拒絕麥克風權限)，就提早退出
     if (!_speechEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('麥克風權限未開啟或引擎初始化失敗')));
       return;
@@ -87,11 +131,11 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
         onResult: (result) {
           // 當語音引擎給出結果時會觸發這裡
           setState(() {
-            // result.recognizedWords 就是你講出來的話
+            // result.recognizedWords 就是講出來的話
             // finalResult 代表這句話使用者已經講完、系統也做完最終確認了
             if (result.finalResult) {
               _isListening = false;
-              // 把真正辨識出來的文字，丟給我們之前寫好的解析器
+              // 把真正辨識出來的文字，丟給解析器
               _processVoiceCommand(result.recognizedWords);
             }
           });
@@ -264,23 +308,12 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
       return;
     }
 
-    final now = DateTime.now();
-    // 取得選定日期的 年/月/日，搭配現在的 時:分:秒
-    final finalDateTime = DateTime(
-      widget.selectedDate.year,
-      widget.selectedDate.month,
-      widget.selectedDate.day,
-      now.hour,
-      now.minute,
-      now.second,
-    );
-
     final newRecord = TransactionEntity(
       id: DateTime.now().millisecondsSinceEpoch.toString(), // 暫時用時間戳當 ID
       accountId: _selectedAccountId!,
       amount: amount,
       note: _noteController.text.isEmpty ? '語音記帳' : _noteController.text,
-      date: finalDateTime,
+      date: _selectedDateTime,
       type: _isExpense ? TransactionType.expense : TransactionType.income,
       categoryId: _selectedCategoryId!,
       userId: '',
@@ -289,7 +322,7 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     // 透過 Bloc 觸發寫入事件
     context.read<TransactionBloc>().add(AddTransactionEvent(newRecord));
 
-    Navigator.pop(context); // 儲存後返回上一頁
+    Navigator.pop(context, _selectedDateTime); // 儲存後返回上一頁
   }
 
   @override
@@ -328,6 +361,24 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 labelText: '金額',
                 prefixIcon: Icon(Icons.attach_money),
                 border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // 日期選擇器
+            InkWell(
+              onTap: _pickDateTime,
+              borderRadius: BorderRadius.circular(4),
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: '日期與時間',
+                  prefixIcon: Icon(Icons.calendar_today),
+                  border: OutlineInputBorder(),
+                ),
+                child: Text(
+                  '${_selectedDateTime.year}/${_selectedDateTime.month.toString().padLeft(2, '0')}/${_selectedDateTime.day.toString().padLeft(2, '0')} ${_selectedDateTime.hour.toString().padLeft(2, '0')}:${_selectedDateTime.minute.toString().padLeft(2, '0')}',
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             ),
             const SizedBox(height: 16),
